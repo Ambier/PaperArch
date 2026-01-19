@@ -1,0 +1,7 @@
+{
+  "name": "PaperArch - AI Architecture Diagram Designer",
+  "description": "An AI-powered tool that transforms research papers into professional architecture diagrams. Support for major conferences like ACL, EMNLP, ICML, and NeurIPS with a 3-step workflow: analysis, generation, and natural language refinement.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
