@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🏛️ PaperArch Architect
 
-# Run and deploy your AI Studio app
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Gemini 2.5](https://img.shields.io/badge/AI-Gemini_2.5_Flash-blueviolet)](https://ai.google.dev/)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 
-This contains everything you need to run your app locally.
+**PaperArch** is an advanced AI-powered workbench designed for researchers to transform complex methodology text into professional, publication-ready architecture diagrams. 
 
-View your app in AI Studio: https://ai.studio/apps/drive/1eFFIvm1aFuqH8kviHKaWGvmEtG9GVAUf
+## 🚀 Features
 
-## Run Locally
+- **Multi-Venue Optimization**: Specialized logic for ACL, EMNLP, KDD, ICML, NeurIPS, and CVPR aesthetics.
+- **3-Phase Workflow**:
+  1. **Logical Decoding**: Uses Gemini 3 Pro to extract structural semantics and select layout strategies (Pipeline, Cyclic, Hierarchical, etc.).
+  2. **Neural Rendering**: Leverages Gemini 2.5 Flash (Nano Banana) to generate precise, vector-style schematic diagrams.
+  3. **Natural Language Refinement**: Fine-tune specific visual elements using iterative prompting.
+- **Scientific Visual Schema**: Implements a "Golden Schema" prompt system that forces the model to think in terms of spatial zones and physical connections rather than abstract concepts.
 
-**Prerequisites:**  Node.js
+## 🛠️ Architecture
 
+```mermaid
+graph TD
+    A[Paper PDF/Content] --> B(Visual Architect - Gemini 3 Pro)
+    B --> C{Golden Schema}
+    C --> D[Nano Banana Renderer - Gemini 2.5 Flash]
+    D --> E[Initial Diagram]
+    E --> F[Refinement Loop]
+    F --> D
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📦 Installation & Setup
+
+1. **Prerequisites**: Ensure you have an API key with access to Gemini 3 and 2.5 series models.
+2. **Environment**: The application expects `process.env.API_KEY` to be configured.
+
+## 🎨 Design Philosophy
+
+We prioritize **Technical Precision** over artistic flair. Every diagram follows a "Visio/Illustrator Aesthetic":
+- Flat vector graphics.
+- Clean 2D geometry.
+- Soft pastel academic color palettes.
+- High legibility for multi-column paper layouts.
+
+---
+
+Built with ❤️ for the research community.
