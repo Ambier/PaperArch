@@ -1,10 +1,14 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { ConferenceType, PaperAnalysis } from "../types";
 import { ANALYSIS_PROMPT, getGenerationPrompt } from "./prompts";
 
+// Initialize AI Client with the provided API key
 const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
+/**
+ * Step 1: Analyze paper semantics using Gemini 3 Pro
+ */
 export const analyzePaper = async (
   content: string | File,
   conference: ConferenceType
@@ -46,28 +50,44 @@ export const analyzePaper = async (
     }
   });
 
-  return JSON.parse(response.text || '{}');
+  const text = response.text || '{}';
+  return JSON.parse(text);
 };
 
+/**
+ * Step 2: Generate diagram using Nano Banana (Gemini 2.5 Flash Image)
+ */
 export const generateDiagram = async (blueprint: string): Promise<string> => {
   const ai = getAIClient();
+  
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
+    model: 'gemini-2.5-flash-image', // The requested "Nano Banana"
     contents: {
       parts: [{ text: getGenerationPrompt(blueprint) }]
     },
     config: {
-      imageConfig: { aspectRatio: "4:3" }
+      imageConfig: {
+        aspectRatio: "4:3"
+      }
     }
   });
 
-  const part = response.candidates?.[0]?.content?.parts.find(p => p.inlineData);
-  if (part?.inlineData?.data) {
-    return `data:image/png;base64,${part.inlineData.data}`;
+  // Guidelines: Iterate through candidates and parts to find the image part
+  const candidate = response.candidates?.[0];
+  if (candidate?.content?.parts) {
+    for (const part of candidate.content.parts) {
+      if (part.inlineData?.data) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
+    }
   }
-  throw new Error("Neural rendering failed.");
+  
+  throw new Error("Nano Banana failed to render the schematic.");
 };
 
+/**
+ * Step 3: Refine the diagram using natural language
+ */
 export const refineDiagram = async (
   currentImageUrl: string,
   instruction: string,
@@ -77,23 +97,39 @@ export const refineDiagram = async (
   const base64Data = currentImageUrl.split(',')[1];
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
+    model: 'gemini-2.5-flash-image', // Use Nano Banana for edits as well
     contents: {
       parts: [
-        { inlineData: { data: base64Data, mimeType: 'image/png' } },
-        { text: `Update this scientific diagram. Instruction: "${instruction}". Original Specs: ${blueprint}. Maintain flat vector academic style.` }
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType: 'image/png'
+          }
+        },
+        { 
+          text: `Update this scientific architecture diagram based on instruction: "${instruction}". 
+          Context Blueprint: ${blueprint}. 
+          Keep the clean, academic, flat vector style.` 
+        }
       ]
     },
     config: {
-      imageConfig: { aspectRatio: "4:3" }
+      imageConfig: {
+        aspectRatio: "4:3"
+      }
     }
   });
 
-  const part = response.candidates?.[0]?.content?.parts.find(p => p.inlineData);
-  if (part?.inlineData?.data) {
-    return `data:image/png;base64,${part.inlineData.data}`;
+  const candidate = response.candidates?.[0];
+  if (candidate?.content?.parts) {
+    for (const part of candidate.content.parts) {
+      if (part.inlineData?.data) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
+    }
   }
-  throw new Error("Refinement cycle failed.");
+  
+  throw new Error("Refinement cycle failed to produce an image.");
 };
 
 const fileToBase64 = (file: File): Promise<string> => {
